@@ -122,13 +122,14 @@
     <div class="total-cost">
         Custo Total: R$ <span id="total-cost">0.00</span>
     </div>
+
     <script>
         const PRICE_PER_KG = 80.00; // Preço do kg do salmão em reais
         const GRAMS_PER_KG = 1000;
 
         const salmonConsumption = {
-            sushi: 15,   // gramas por peça
-            sashimi: 15, // gramas por peça
+            sushi: 10,   // gramas por peça
+            sashimi: 10, // gramas por peça
             temaki: 40,  // gramas por peça
             joe: 10      // gramas por peça
         };
@@ -140,6 +141,19 @@
             joe: 0
         };
 
+        // Função para obter o valor do cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Função para definir o valor do cookie
+        function setCookie(name, value) {
+            document.cookie = `${name}=${value}; path=/; max-age=31536000`; // expira em 1 ano
+        }
+
+        // Função para atualizar o contador
         function updateCount(item) {
             document.getElementById(`${item}-count`).textContent = counters[item];
             const totalSalmon = counters[item] * salmonConsumption[item];
@@ -147,25 +161,31 @@
             const cost = (totalSalmon / GRAMS_PER_KG) * PRICE_PER_KG;
             document.getElementById(`${item}-cost`).textContent = cost.toFixed(2);
             updateTotalCost();
+            setCookie(item, counters[item]);  // Salva o contador no cookie
         }
 
+        // Função para incrementar
         function increment(item) {
             counters[item]++;
             updateCount(item);
         }
 
+        // Função para decrementar
         function decrement(item) {
             if (counters[item] > 0) counters[item]--;
             updateCount(item);
         }
 
+        // Função para resetar os contadores
         function resetCounters() {
             for (const key in counters) {
                 counters[key] = 0;
                 updateCount(key);
+                setCookie(key, 0);  // Reseta o valor no cookie
             }
         }
 
+        // Função para atualizar o custo total
         function updateTotalCost() {
             let totalCost = 0;
             for (const item in counters) {
@@ -173,6 +193,17 @@
                 totalCost += (totalSalmon / GRAMS_PER_KG) * PRICE_PER_KG;
             }
             document.getElementById('total-cost').textContent = totalCost.toFixed(2);
+        }
+
+        // Recupera os valores dos cookies ao carregar a página
+        window.onload = function() {
+            for (const key in counters) {
+                const value = getCookie(key);
+                if (value !== undefined) {
+                    counters[key] = parseInt(value);
+                    updateCount(key);
+                }
+            }
         }
     </script>
 </body>
