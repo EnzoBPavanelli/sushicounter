@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Peças de Comida Japonesa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .counter-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 150px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .item img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .item h2 {
+            margin: 10px 0;
+        }
+        .item p {
+            margin: 5px 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            width: 80px;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .total-cost {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contador de Peças de Comida Japonesa</h1>
+    <div class="counter-container">
+        <div class="item">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/028/615/354/small_2x/sake-nigiri-sushi-isolated-on-transparent-background-generative-ai-png.png" alt="Sushi">
+            <h2>Sushi</h2>
+            <p id="sushi-count">0</p>
+            <p>Consumo de salmão: <span id="sushi-salmon">0</span> g</p>
+            <p>Custo: R$ <span id="sushi-cost">0.00</span></p>
+            <div class="button-container">
+                <button onclick="increment('sushi')">Adicionar</button>
+                <button onclick="decrement('sushi')">Remover</button>
+            </div>
+        </div>
+        <div class="item">
+            <img src="https://instadelivery-public.nyc3.cdn.digitaloceanspaces.com/itens/LhSYGYhy1fdTYdc9Q2wP7UgPNBohLJDBOhSShg7s.png" alt="Joe">
+            <h2>Joe</h2>
+            <p id="joe-count">0</p>
+            <p>Consumo de salmão: <span id="joe-salmon">0</span> g</p>
+            <p>Custo: R$ <span id="joe-cost">0.00</span></p>
+            <div class="button-container">
+                <button onclick="increment('joe')">Adicionar</button>
+                <button onclick="decrement('joe')">Remover</button>
+            </div>
+        </div>
+        <div class="item">
+            <img src="https://saikootemakeria.com.br/wp-content/uploads/2018/07/curiosidades-temaki-transp.png" alt="Temaki">
+            <h2>Temaki</h2>
+            <p id="temaki-count">0</p>
+            <p>Consumo de salmão: <span id="temaki-salmon">0</span> g</p>
+            <p>Custo: R$ <span id="temaki-cost">0.00</span></p>
+            <div class="button-container">
+                <button onclick="increment('temaki')">Adicionar</button>
+                <button onclick="decrement('temaki')">Remover</button>
+            </div>
+        </div>
+        <div class="item">
+            <img src="https://e7.pngegg.com/pngimages/292/504/png-clipart-sashimi-sushi-makizushi-japanese-cuisine-california-roll-sushi-sashimi-food-chicken-meat.png" alt="Sashimi">
+            <h2>Sashimi</h2>
+            <p id="sashimi-count">0</p>
+            <p>Consumo de salmão: <span id="sashimi-salmon">0</span> g</p>
+            <p>Custo: R$ <span id="sashimi-cost">0.00</span></p>
+            <div class="button-container">
+                <button onclick="increment('sashimi')">Adicionar</button>
+                <button onclick="decrement('sashimi')">Remover</button>
+            </div>
+        </div>
+    </div>
+    <button onclick="resetCounters()">Resetar</button>
+    <div class="total-cost">
+        Custo Total: R$ <span id="total-cost">0.00</span>
+    </div>
+    <script>
+        const PRICE_PER_KG = 80.00; // Preço do kg do salmão em reais
+        const GRAMS_PER_KG = 1000;
+
+        const salmonConsumption = {
+            sushi: 15,   // gramas por peça
+            sashimi: 15, // gramas por peça
+            temaki: 40,  // gramas por peça
+            joe: 10      // gramas por peça
+        };
+
+        const counters = {
+            sushi: 0,
+            sashimi: 0,
+            temaki: 0,
+            joe: 0
+        };
+
+        function updateCount(item) {
+            document.getElementById(`${item}-count`).textContent = counters[item];
+            const totalSalmon = counters[item] * salmonConsumption[item];
+            document.getElementById(`${item}-salmon`).textContent = totalSalmon;
+            const cost = (totalSalmon / GRAMS_PER_KG) * PRICE_PER_KG;
+            document.getElementById(`${item}-cost`).textContent = cost.toFixed(2);
+            updateTotalCost();
+        }
+
+        function increment(item) {
+            counters[item]++;
+            updateCount(item);
+        }
+
+        function decrement(item) {
+            if (counters[item] > 0) counters[item]--;
+            updateCount(item);
+        }
+
+        function resetCounters() {
+            for (const key in counters) {
+                counters[key] = 0;
+                updateCount(key);
+            }
+        }
+
+        function updateTotalCost() {
+            let totalCost = 0;
+            for (const item in counters) {
+                const totalSalmon = counters[item] * salmonConsumption[item];
+                totalCost += (totalSalmon / GRAMS_PER_KG) * PRICE_PER_KG;
+            }
+            document.getElementById('total-cost').textContent = totalCost.toFixed(2);
+        }
+    </script>
+</body>
+</html>
